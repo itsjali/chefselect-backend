@@ -3,3 +3,6 @@ env: flex
 
 runtime_config: 
   python_version: 3
+
+readiness_check:
+  timeout_sec: 300
