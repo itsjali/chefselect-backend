@@ -13,4 +13,3 @@ def test_endpoint():
 @app.route('/create-recipe', methods=['POST'])
 def create_recipe():
     return jsonify({'message': 'Recipe successfully created'}), 201
-
