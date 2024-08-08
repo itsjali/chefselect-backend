@@ -5,6 +5,7 @@ steps:
   args:
     - '-c'
     - |
+      export PYTHONPATH=$PYTHONPATH:/workspace && \
       pip install -r requirements.txt && \
       pytest tests/
 
