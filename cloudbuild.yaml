@@ -12,6 +12,7 @@ steps:
       until docker exec postgres-test pg_isready -U postgres; do
         sleep 1;
       done && \
+      export TEST_POSTGRES_DB_URL=postgresql://postgres:postgres@localhost:5432/chefselect_test_db && \
       export PYTHONPATH=/workspace && \
       pip install -r requirements.txt && \
       pytest tests/ && \
