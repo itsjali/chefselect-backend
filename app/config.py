@@ -7,5 +7,6 @@ class Config:
 
 
 class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv("TEST_POSTGRES_DB_URL") 
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:' 
     TESTING = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
