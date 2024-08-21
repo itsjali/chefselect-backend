@@ -6,8 +6,8 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
-    ingredients = db.relationship("Ingredient", backref="recipe", lazy=True)
-    instructions = db.relationship("Instruction", backref="recipe", lazy=True)
+    ingredients = db.relationship("Ingredient", backref="recipe", lazy=True, cascade="all, delete-orphan")
+    instructions = db.relationship("Instruction", backref="recipe", lazy=True, cascade="all, delete-orphan")
 
 
 class Ingredient(db.Model):
