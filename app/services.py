@@ -31,3 +31,17 @@ def create_recipe_service(validated_data):
     db.session.commit()
 
     return recipe
+
+
+def build_recipe_list():
+    recipes = Recipe.query.all()
+
+    recipe_list = []
+    for recipe in recipes:
+        recipe_list.append({
+            "recipe_id": recipe.id,
+            "title": recipe.title,
+            "description": recipe.description,
+        })
+
+    return recipe_list
