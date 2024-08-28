@@ -21,9 +21,8 @@ steps:
       envsubst < env_variables_template.yaml > substituted_env.yaml && \
       cat static_app.yaml substituted_env.yaml > app.yaml && \
       echo "Checking current database migration version..." && \
-      flask db current || echo "Failed to get current DB version" && \
-      flask db stamp head || echo "Failed to stamp head" && \
-      flask db upgrade || echo "Failed to upgrade database" && \
+      flask db upgrade && \
+      flask db stamp head && \
       gcloud app deploy
   env:
     - 'POSTGRES_DB_URL=$_POSTGRES_DB_URL'
