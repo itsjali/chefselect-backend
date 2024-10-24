@@ -16,9 +16,8 @@ steps:
     - '-c'
     - |
       apt-get update && \
-      apt-get install -y libpq-dev && \
+      apt-get install -y libpq-dev gettext && \
       pip install -r requirements.txt --break-system-packages && \
-      echo ">>>>>>>>>>>>>>>>>>"
       envsubst < env_variables_template.yaml > substituted_env.yaml && \
       cat static_app.yaml substituted_env.yaml > app.yaml && \
       flask db upgrade && \
