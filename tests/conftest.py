@@ -24,3 +24,20 @@ def init_database():
         db.create_all()
         yield db
         db.drop_all()
+
+
+@pytest.fixture
+def valid_recipe_data():
+    title = "Pancakes"
+    description = "Some simple pancakes"
+    ingredients = [
+        {"unit": "200g", "name": "Flour"},
+    ]
+    instructions = ["Mix ingredients"]
+
+    return {
+            "title": title,
+            "description": description,
+            "ingredients": ingredients,
+            "instructions": instructions,
+    }

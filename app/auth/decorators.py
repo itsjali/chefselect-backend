@@ -14,7 +14,7 @@ def token_required(view):
         if "Authorization" in request.headers:
             auth_header = request.headers["Authorization"]
             if auth_header.startswith("Bearer "):
-                token = auth_header.split(" ")[1] # Extract token
+                token = auth_header.split(" ")[1]
         
         if not token:
             return jsonify({"error": "Token is not present"}), 401
