@@ -2,7 +2,6 @@
 
 # dependencies
 .venv
-.env
 .pytest_cache
 
 # misc
