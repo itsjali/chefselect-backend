@@ -4,14 +4,18 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - .:/app
+      - .:/chefselect-backend
     env_file:
       - .env
     depends_on:
       - db
     # command: sh -c "tail -f /dev/null"
     command: >
-      sh -c 'flask db upgrade && flask run --host=0.0.0.0'
+      sh -c '
+        flask db upgrade && 
+        python -c "from app import create_app; app=create_app(); app.app_context().push(); from app.auth.seed import seed_dev_user; seed_dev_user()" && 
+        flask run --host=0.0.0.0
+      '
 
   db:
     image: postgres:13

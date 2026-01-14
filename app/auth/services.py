@@ -2,15 +2,30 @@ import jwt
 import re
 
 from datetime import datetime, timedelta
-from typing import Tuple, Dict
 from flask import jsonify
 from flask_bcrypt import check_password_hash
+from typing import Tuple, Dict
+from sqlalchemy.exc import IntegrityError
 
-from app.models import db, User
 from app import bcrypt
+from app.models import db, User
 
 # Regex for validating an Email
 EMAIL_REGEX = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+
+
+def create_user_in_db(name: str, email: str, password: str):
+    hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+    new_user = User(email=email, password=hashed_password, name=name)
+
+    db.session.add(new_user)
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return False, f"Failed to create user: {email} - It may already exist."
+
+    return True, f"User created successfully: {email}"
 
 
 class CreateNewUser:
@@ -18,7 +33,7 @@ class CreateNewUser:
         self.name = name
         self.email = email
         self.password = password
-    
+
     def run(self):
         if not self.email or not self.password:
             return jsonify({"error": "Email or password are required"}), 400
@@ -32,15 +47,12 @@ class CreateNewUser:
         existing_email = User.query.filter_by(email=self.email).first()
         if existing_email:
             return jsonify({"error": "User already exists"}), 400
-        
-        hashed_password = bcrypt.generate_password_hash(self.password).decode("utf-8")
 
         # Create new user
-        new_user = User(email=self.email, password=hashed_password, name=self.name)
-        db.session.add(new_user)
-        db.session.commit()
-
-        return jsonify({"message": "User created successfully", "email": self.email}), 201
+        success, message = create_user_in_db(self.name, self.email, self.password)
+        if not success:
+            return jsonify({"error": message}), 400
+        return jsonify({"message": message, "email": self.email}), 201
 
 
 class AuthenticateUser:
