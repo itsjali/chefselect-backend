@@ -2,13 +2,13 @@ import os
 import requests
 
 from cachecontrol import CacheControl
-from flask import Blueprint, abort, jsonify, redirect, request, session
+from flask import Blueprint, abort, current_app, jsonify, redirect, request, session
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from google.auth.transport import requests as google_requests
 
-from app.auth.services import AuthenticateUser, CreateNewUser
-from app.models import db, User
+from app.auth.services import AuthenticateUser, CreateNewUser, create_user_in_db
+from app.models import User
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -51,6 +51,8 @@ def google_login():
 
 @auth_bp.route("/callback")
 def callback():
+    logger = current_app.logger
+
     # Exchange auth code for a token
     flow.fetch_token(authorization_response=request.url)
     
@@ -69,13 +71,16 @@ def callback():
     )
     
     email = id_info.get("email")
+    name = id_info.get("name")
     session["email"] = email
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        user = User(email=email)
-        db.session.add(user)
-        db.session.commit()
+        success, message, user = create_user_in_db(name=name, email=email, password="google-oauth-no-pw")
+        if not success:
+            logger.error(f"Google OAuth user creation failed: {message}")
+            return abort(500)
+        logger.info(f"Google OAuth user created: {email}")
 
     auth_service = AuthenticateUser(secret_key=AUTH_SECRET_KEY)
     token_response, status_code = auth_service.generate_tokens(user.id)

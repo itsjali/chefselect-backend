@@ -25,7 +25,7 @@ def create_user_in_db(name: str, email: str, password: str):
         db.session.rollback()
         return False, f"Failed to create user: {email} - It may already exist."
 
-    return True, f"User created successfully: {email}"
+    return True, f"User created successfully: {email}", new_user
 
 
 class CreateNewUser:
@@ -49,7 +49,7 @@ class CreateNewUser:
             return jsonify({"error": "User already exists"}), 400
 
         # Create new user
-        success, message = create_user_in_db(self.name, self.email, self.password)
+        success, message, _ = create_user_in_db(self.name, self.email, self.password)
         if not success:
             return jsonify({"error": message}), 400
         return jsonify({"message": message, "email": self.email}), 201

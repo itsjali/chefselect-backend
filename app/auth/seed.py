@@ -26,7 +26,7 @@ def seed_dev_user():
         logger.info(f"Dev user already exists: {DEV_USER_EMAIL}")
         return
 
-    success, message = create_user_in_db(
+    success, message, _ = create_user_in_db(
         name=DEV_USER_NAME, 
         email=DEV_USER_EMAIL, 
         password=DEV_USER_PASSWORD
